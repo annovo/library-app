@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { CREATE_BOOK, ALL_BOOKS, ALL_AUTHORS } from '../queries'
+import _ from 'lodash'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -9,10 +10,36 @@ const NewBook = (props) => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
+  const handleError = (error) => {
+    if(error && error.graphQLErrors[0] && error.graphQLErrors[0].message){
+      props.onError(error.graphQLErrors[0].message)
+    } else {
+      props.onError('Sorry, cant create a book with such parameters')
+    }
+    props.setPage('add')
+  }
+
   const [ createBook ] = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
-    onError: (error) => {
-      console.log(error.graphQLErrors)
+    onError: (error) => handleError(error),
+    update: (store, response) => {
+      const booksInStore = store.readQuery({ query: ALL_BOOKS })
+      store.writeQuery({
+        query: ALL_BOOKS,
+        data: {
+          booksInStore, allBooks: [ ...booksInStore.allBooks, response.data.addBook ]} 
+      })
+
+      const authorsInStore = store.readQuery({ query: ALL_AUTHORS })
+
+      if(!_.find(authorsInStore.allAuthors, response.data.addBook.author)){
+        store.writeQuery({
+          query: ALL_AUTHORS,
+          data: {
+            authorsInStore,
+            allAuthors: [ ...authorsInStore.allAuthors, response.data.addBook.author]
+          }
+        })
+      }
     }
   })
 
@@ -29,18 +56,16 @@ const NewBook = (props) => {
         genres.length !== 0
       ) {
         createBook({variables: { title, author, published: Number(published), genres }})
-
-        console.log('add book...')
+        props.setPage('authors')
       } else {
-        console.log('error')
+        handleError()
       }
-      
+
       setTitle('')
       setPublished('')
       setAuhtor('')
       setGenres([])
       setGenre('')
-    
   }
 
   const addGenre = () => {
@@ -49,7 +74,7 @@ const NewBook = (props) => {
       setGenres(genres.concat(genre))
       setGenre('')
     } else {
-      console.log('error')
+      handleError()
     }  
   }
 

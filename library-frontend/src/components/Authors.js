@@ -2,25 +2,62 @@ import React, { useState, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import { ALL_AUTHORS, UPDATE_AUTHOR } from '../queries'
 
-const Authors = (props) => {
-  const result = useQuery(ALL_AUTHORS)
+const AuthorForm = ({ authors, updateBornyear }) => {
 
   const [name, setName] = useState('')
   const [bornyear, setBornyear] = useState('')
 
+  useEffect(() => {
+    if(authors)
+    {
+      setName(authors[0].name)
+    }
+  }, [authors])
+
+  const updateAuthor = (e) => {
+    e.preventDefault()
+    const born = bornyear.trim() === '' ? null : Number(bornyear)
+
+    updateBornyear({variables: {name, born }})
+
+    setName(authors[0].name)
+    setBornyear('')
+  }
+
+  return (
+    <div>
+      <h2>Set birthyear</h2>
+      name
+      <select value = {name} onChange = {({target}) => setName(target.value)} >
+          {authors.map(a =>
+            <option key = {a.id} value = {a.name}>{a.name}</option>
+          )}
+      </select>
+      <br />
+      born 
+      <input value = {bornyear} onChange = {({target}) => setBornyear(target.value)} />
+      <br />
+      <button type = 'button' onClick = {updateAuthor}>update author</button>
+    </div>
+  )
+}
+
+const Authors = (props) => {
+  const result = useQuery(ALL_AUTHORS)
+
   const [ updateBornyear ] = useMutation(UPDATE_AUTHOR, {
     refetchQueries: [{query: ALL_AUTHORS}],
-    onError: error => console.log(error.graphQLErrors)
+    onError: error => {
+      if(error.graphQLErrors[0] && error.graphQLErrors[0].message){
+        props.onError(error.graphQLErrors[0].message)
+      } else {
+        props.onError('Birth date should be a number')
+      }
+    }
   })
 
-  useEffect(() => {
-    if(result.data)
-    {
-      setName(result.data.allAuthors[0].name)
-    }
-  }, [result.data])
-  
-  if (!props.show) {
+ 
+  if (!props.show || !result.data) {
     return null
   }
 
@@ -30,15 +67,6 @@ const Authors = (props) => {
 
   const authors = result.data.allAuthors
 
-  const updateAuthor = e => {
-    e.preventDefault()
-    const born = bornyear.trim() === '' ? null : Number(bornyear)
-
-    updateBornyear({variables: {name, born }})
-
-    setName(authors[0].name)
-    setBornyear('')
-  }
 
   return (
     <div>
@@ -63,20 +91,11 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
-      <div>
-        <h2>Set birthyear</h2>
-        name
-        <select value = {name} onChange = {({target}) => setName(target.value)} >
-            {authors.map(a =>
-              <option key = {a.id} value = {a.name}>{a.name}</option>
-            )}
-        </select>
-        <br />
-        born 
-        <input value = {bornyear} onChange = {({target}) => setBornyear(target.value)} />
-        <br />
-        <button type = 'button' onClick = {updateAuthor}>update author</button>
-      </div>
+      {
+        props.user
+        ? <AuthorForm authors = {authors} updateBornyear ={updateBornyear} />
+        : null
+      }
     </div>
   )
 }

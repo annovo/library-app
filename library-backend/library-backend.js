@@ -110,7 +110,7 @@ const resolvers = {
       }
 
       let author = await Author.findOne({ name: args.author })
-
+      
       if(!author) {
         const newAuthor = new Author({ name: args.author })
         try {
@@ -124,10 +124,12 @@ const resolvers = {
 
       try {
         await book.save()
+        await book.populate('author').execPopulate()
       } catch (error) {
+        await Author.findByIdAndDelete(author._id)
         throw new UserInputError(error.message, { invalidArgs: args })
       }
-
+      
       return book
     },
     editAuthor: async (root, args, { currentUser }) => {
