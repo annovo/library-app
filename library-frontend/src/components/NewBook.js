@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { CREATE_BOOK, ALL_BOOKS, ALL_AUTHORS } from '../queries'
-import _ from 'lodash'
+import { CREATE_BOOK } from '../queries'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -22,25 +21,8 @@ const NewBook = (props) => {
   const [ createBook ] = useMutation(CREATE_BOOK, {
     onError: (error) => handleError(error),
     update: (store, response) => {
-      const booksInStore = store.readQuery({ query: ALL_BOOKS })
-      store.writeQuery({
-        query: ALL_BOOKS,
-        data: {
-          booksInStore, allBooks: [ ...booksInStore.allBooks, response.data.addBook ]} 
-      })
-
-      const authorsInStore = store.readQuery({ query: ALL_AUTHORS })
-
-      if(!_.find(authorsInStore.allAuthors, response.data.addBook.author)){
-        store.writeQuery({
-          query: ALL_AUTHORS,
-          data: {
-            authorsInStore,
-            allAuthors: [ ...authorsInStore.allAuthors, response.data.addBook.author]
-          }
-        })
+        props.updateCacheWith(response.data.addBook, response.data.addBook.author)
       }
-    }
   })
 
   if (!props.show) {

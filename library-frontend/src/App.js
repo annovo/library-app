@@ -1,12 +1,14 @@
 
 import React, { useState, useEffect } from 'react'
+import _ from 'lodash'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Notification from './components/Notification'
 import Login from './components/Login'
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client'
 import Recomendation from './components/Recommendation'
+import { BOOK_ADDED, ALL_BOOKS, ALL_AUTHORS } from './queries'
 
 const ButtonSet = ({ setPage, logout }) => {
   return(
@@ -25,10 +27,10 @@ const App = () => {
   const [user, setUser] = useState()
   const client = useApolloClient()
 
-  const notify = (text) => {
+  const notify = (text, success) => {
     clearInterval(timerId)
 
-    const newMessage = { text }
+    const newMessage = success ? { text, success: true } : { text }
     setMessage(newMessage)
     const id = setTimeout(() => setMessage(null), 3000)
     setTimer(id)
@@ -47,6 +49,38 @@ const App = () => {
       setUser(token)
     }
   }, [])
+
+  const updateCacheWith = (book, author) => {
+    const booksInStore = client.readQuery({ query: ALL_BOOKS })
+
+    if(!_.find(booksInStore.allBooks, book)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: {
+          booksInStore, allBooks: [ ...booksInStore.allBooks, book ]} 
+      })
+    }
+
+    const authorsInStore = client.readQuery({ query: ALL_AUTHORS })
+
+    if(!_.find(authorsInStore.allAuthors, author)){
+      client.writeQuery({
+        query: ALL_AUTHORS,
+        data: {
+          authorsInStore,
+          allAuthors: [ ...authorsInStore.allAuthors, author ]
+        }
+      })
+    }
+  }
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      const addedBook = subscriptionData.data.bookAdded
+      notify(`${addedBook.title} added`, 'success')
+      updateCacheWith(addedBook, addedBook.author)
+    }
+  })
 
   return (
     <div>
@@ -76,6 +110,7 @@ const App = () => {
         show={page === 'add'}
         onError = {notify}
         setPage = {setPage}
+        updateCacheWith = {updateCacheWith}
       />
 
       <Login show = {page === 'login'} onError = {notify} setUser = {setUser} setPage = {setPage} />
