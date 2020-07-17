@@ -28,11 +28,13 @@ const AuthorForm = ({ authors, updateBornyear }) => {
     <div>
       <h2>Set birthyear</h2>
       name
+      <div className = "styled-select">
       <select value = {name} onChange = {({target}) => setName(target.value)} >
           {authors.map(a =>
             <option key = {a.id} value = {a.name}>{a.name}</option>
           )}
       </select>
+      </div>
       <br />
       born 
       <input value = {bornyear} onChange = {({target}) => setBornyear(target.value)} />

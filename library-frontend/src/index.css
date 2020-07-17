@@ -1,0 +1,100 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+button {
+  border: 0;
+  background: transparent;
+}
+
+button:hover {
+  background-color: rgba(94, 12, 34,0.1);
+  cursor: pointer;
+}
+
+button:focus{
+  background-color: rgba(94, 12, 34,0.4); 
+  outline: none;
+}
+
+.nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  background-color: rgba(168, 50, 50, 0.2);
+}
+.nav button {
+  text-transform: uppercase;
+  padding: 15px;
+}
+.content {
+  width: 1000px;
+  margin: 65px auto;
+}
+
+.content h2 {
+  text-align: center;
+  text-transform: uppercase;
+}
+
+input {
+  width: 200px;
+  margin: 10px 5px;
+  color: #403866;
+  font-size: 18px;
+  height: 42px;
+  padding: 0 10px;
+  border: 1px solid;
+  border-radius: 3px;
+  border-color: #e6e6e6;
+  outline: none;
+}
+
+input:focus{
+  border-color: #c9abb3;
+}
+
+select {
+  padding: 10px;
+  border: 1px solid #e6e6e6;
+}
+
+.books-grid-container{
+  --row-count: 10;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(var(--row-count), 450px);
+}
+
+.books-grid-item{
+  margin: 10px;
+  padding: 10px 5px;
+  position: relative;
+}
+
+.books-grid-cover{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.books-grid-img img{
+  height: 300px;
+  margin-left: 15%;
+}
+
+.books-grid-title{
+  text-transform: uppercase;
+  text-align: justify;
+  font-size: 0.78em;
+  margin: 4% 7%;
+}
+
+.books-grid-footer{
+   opacity: 0.5;
+   position: absolute;
+   bottom: 10px;
+   left: 45%;
+}

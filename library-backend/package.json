@@ -5,6 +5,7 @@
   "main": "library-backend.js",
   "scripts": {
     "start": "node library-backend.js",
+    "dev": "nodemon library-backend.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "An Na",
@@ -19,5 +20,8 @@
     "mongoose": "^5.9.19",
     "mongoose-unique-validator": "^2.0.3",
     "uuid": "^8.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }

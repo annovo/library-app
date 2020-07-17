@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import _ from 'lodash'
 import Authors from './components/Authors'
@@ -84,7 +83,8 @@ const App = () => {
 
   return (
     <div>
-      <div>
+      <div className = 'nav'>
+        <div className = "bar">
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         {
@@ -92,29 +92,37 @@ const App = () => {
           ? <ButtonSet setPage = {setPage} logout = {handleLogout} />
           : <button onClick={()=>setPage('login')}>login</button>
         }
-
       </div>
-
-      <Notification message = {message} />
-      <Authors
-        show={page === 'authors'}
-        onError = {notify}
-        user = {user}
-      />
-
-      <Books
-        show={page === 'books'}
-      />
-
-      <NewBook
-        show={page === 'add'}
-        onError = {notify}
-        setPage = {setPage}
-        updateCacheWith = {updateCacheWith}
-      />
-
-      <Login show = {page === 'login'} onError = {notify} setUser = {setUser} setPage = {setPage} />
-      <Recomendation show = {page === 'recommend'} />
+      </div>
+      <div className = "content">
+        <div className = "notification">
+          <Notification message = {message} />
+        </div>
+        <div className = "authors">
+          <Authors
+            show={page === 'authors'}
+            onError = {notify}
+            user = {user}
+          />
+        </div>
+        <div className = "books">
+          <Books
+            show={page === 'books'}
+          />
+        </div>
+        <div className = "newBook">
+          <NewBook
+            show={page === 'add'}
+            onError = {notify}
+            setPage = {setPage}
+            updateCacheWith = {updateCacheWith}
+          />
+        </div>
+        <div className = "recommendation">
+          <Recomendation show = {page === 'recommend'} />
+        </div>
+        <Login show = {page === 'login'} onError = {notify} setUser = {setUser} setPage = {setPage} />
+      </div>
     </div>
   )
 }
