@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React, {useState} from 'react'
+import BookForm from './BookForm'
 import { useMutation } from '@apollo/client'
 import { CREATE_BOOK } from '../queries'
+import axios from 'axios'
+import BookModal from './BookModal'
 
 const NewBook = (props) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuhtor] = useState('')
-  const [published, setPublished] = useState('')
-  const [genre, setGenre] = useState('')
-  const [genres, setGenres] = useState([])
+  const [show, setShow] = useState(false)
+  const [books, setBooks] = useState([])
 
   const handleError = (error) => {
     if(error && error.graphQLErrors[0] && error.graphQLErrors[0].message){
@@ -20,7 +20,7 @@ const NewBook = (props) => {
 
   const [ createBook ] = useMutation(CREATE_BOOK, {
     onError: (error) => handleError(error),
-    update: (store, response) => {
+    update: (_, response) => {
         props.updateCacheWith(response.data.addBook, response.data.addBook.author)
       }
   })
@@ -29,74 +29,51 @@ const NewBook = (props) => {
     return null
   }
 
-  const submit = async (event) => {
-    event.preventDefault()
+  const onClick = async (title, author, published, genres) => {
     if(
         title.trim() !== '' && 
-        author.trim() !== '' &&
-        published.trim() !== '' &&
-        genres.length !== 0
+        author.trim() !== '' 
+        // published.trim() !== '' &&
+        // genres.length !== 0
       ) {
-        createBook({variables: { title, author, published: Number(published), genres }})
-        props.setPage('authors')
+        const bookTitle = title.trim().toLowerCase().replace(/\s+/g, '+')
+        const bookAuthor = author.trim().toLowerCase().replace(/\s+/g, '+')
+        const { data } = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=intitle:${bookTitle}+inauthor:${bookAuthor}`)
+        const newBooks = data.items ? data.items.reduce((res, book, i) => {
+          if(i < 10) {
+            let newBook = {
+              title: book.volumeInfo.title,
+              author: book.volumeInfo.authors[0],
+              description: book.volumeInfo.description,
+              rating: book.volumeInfo.averageRating,
+              genres: book.volumeInfo.categories,
+              published: book.volumeInfo.publishedDate,
+            }
+            res = res.concat(newBook)
+          }
+          return res
+        }, []) : []
+        setBooks(newBooks)
+        setShow(true)
+        //const { description, averageRating: rating } = data.items[0].volumeInfo
+       // createBook({variables: { title, author, published: Number(published), genres, description, rating: Number(rating) }})
+        //props.setPage('authors')
       } else {
         handleError()
       }
-
-      setTitle('')
-      setPublished('')
-      setAuhtor('')
-      setGenres([])
-      setGenre('')
   }
 
-  const addGenre = () => {
-    if(genre.trim() !== '' )
-    {
-      setGenres(genres.concat(genre))
-      setGenre('')
-    } else {
-      handleError()
-    }  
+  const onSubmit = (book) => {
+    const {title, author, published, genres, description, rating} = book
+    console.log(book)
+    createBook({variables: { title, author, published, genres, description, rating: Number(rating) }})
+    setShow(false)
+    props.setPage('authors')
   }
-
   return (
     <div>
-      <form onSubmit={submit}>
-        <div>
-          title
-          <input
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </div>
-        <div>
-          author
-          <input
-            value={author}
-            onChange={({ target }) => setAuhtor(target.value)}
-          />
-        </div>
-        <div>
-          published
-          <input
-            type='number'
-            value={published}
-            onChange={({ target }) => setPublished(target.value)}
-          />
-        </div>
-        <div>
-          <input
-            value={genre}
-            onChange={({ target }) => setGenre(target.value)}
-          />
-          <button onClick={addGenre} type="button">add genre</button>
-        </div>
-        <div>
-          genres: {genres.join(' ')}
-        </div>
-        <button type='submit'>create book</button>
-      </form>
+      <BookForm onSubmit = {onClick} handleError = {handleError} />
+      {show && <BookModal books = {books} onSubmit = {onSubmit} />}
     </div>
   )
 }

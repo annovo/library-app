@@ -35,9 +35,11 @@ const typeDefs = gql`
 
   type Book {
     title: String!
-    published: Int!
+    published: String!
     author: Author!
     genres: [String!]!
+    description: String
+    rating: Float
     id: ID!
   }
 
@@ -53,8 +55,10 @@ const typeDefs = gql`
     addBook(
       title: String!,
       author: String!,
-      published: Int!,
-      genres:[String!]!
+      published: String!,
+      genres:[String!]!,
+      rating: Float,
+      description: String
     ): Book
     editAuthor(
       name: String!,
@@ -117,8 +121,9 @@ const resolvers = {
       }
 
       let author = await Author.findOne({ name: args.author })
-      
+      let foundAuthor = true
       if(!author) {
+        foundAuthor = false
         const newAuthor = new Author({ name: args.author })
         try {
           author = await newAuthor.save()
@@ -133,7 +138,9 @@ const resolvers = {
         await book.save()
         await book.populate('author').execPopulate()
       } catch (error) {
-        await Author.findByIdAndDelete(author._id)
+        if(!foundAuthor) { 
+          await Author.findByIdAndDelete(author._id) 
+        }
         throw new UserInputError(error.message, { invalidArgs: args })
       }
       pubsub.publish('BOOK_ADDED', {bookAdded: book})

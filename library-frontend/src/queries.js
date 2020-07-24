@@ -13,6 +13,8 @@ const BOOK_DETAILS = gql `
    title
    published
    genres
+   description
+   rating
    id
    author {
     ...authorDetails
@@ -39,12 +41,14 @@ query getBooks($genres: String){
 ${BOOK_DETAILS}
 `
 export const CREATE_BOOK = gql `
-mutation createBook($title: String!, $author: String!, $published: Int!, $genres: [String!]!){
+mutation createBook($title: String!, $author: String!, $published: String!, $genres: [String!]!, $description: String, $rating: Float){
   addBook(
     title: $title,
     author: $author,
     published: $published,
-    genres: $genres
+    genres: $genres,
+    description: $description,
+    rating: $rating
   ) {
     ...bookDetails
   }
