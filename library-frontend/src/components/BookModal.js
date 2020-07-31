@@ -27,6 +27,31 @@ const BookModal = ({ books, onSubmit }) => {
     }))
   }
 
+  const getIcons = (rating) => {
+    let colored = rating ? Number(rating) : 0
+    let icons = []
+    for(let i = 1; i < 6; i++) {
+      let style = {color: "gray"}
+      if((colored - i) >= 0) {
+        style.color = "#c70039"
+      } else {
+        if(Math.floor(colored) !== colored) {
+          let percent = Math.floor((colored % Math.floor(colored)) * 100)
+          style = {
+            background: `linear-gradient(90deg, #c70039 0%, #c70039 ${percent}%, gray ${percent}%, gray 100%)`,
+            "-webkit-background-clip": "text",
+            "-webkit-text-fill-color": "transparent"
+          }
+          colored = 0
+        } else {
+          style.color = "gray"
+        }
+      }
+      icons.push(<i style = {style} className="material-icons">star</i>)
+    }
+    return icons
+  }
+
   return(
     <div>
       <h2>Did you mean</h2>
@@ -42,18 +67,22 @@ const BookModal = ({ books, onSubmit }) => {
           className = "books-grid-cover"
           style={{ zIndex, transform: scale.interpolate(s => `perspective(600px) scale(${s})`), opacity: opacity }}
         >
-          <div className = "books-grid-img">
-            <img src = "https://upload.wikimedia.org/wikipedia/commons/f/fc/No_picture_available.png" alt = "nothing"/>
+          <div className = "books-modal-title">{books[i].title}</div>
+          <div className = "books-modal-author">{books[i].author} <br /> {books[i].published}</div>
+          <div className = "books-modal-rating">
+            {getIcons(books[i].rating)}
           </div>
-          <div className = "books-grid-title">{books[i].title} - {books[i].author}</div>
-          <div className = "books-grid-footer">{books[i].published}</div>
-          {books[i].genres && books[i].genres.map(g => <h2 key = {g}>{g}</h2>)}
+          <div className = "books-modal-img">
+            <img src = {books[i].img || "https://upload.wikimedia.org/wikipedia/commons/f/fc/No_picture_available.png"} alt = "nothing"/>
+          </div>
+          <div className = "books-modal-description">{books[i].description?.length > 400 ? `${books[i].description.slice(0, 400)}...` : books[i].description}</div>
+          <div className = "books-modal-genres books-grid-footer">{books[i].genres && books[i].genres.map(g => <p key = {g}>{g}</p>)}</div>
         </a.div>
         <a.div 
           className = "books-grid-cover"
           style={{ zIndex, transform: scale.interpolate(s => `perspective(600px) scale(${s})`), opacity: opacity.interpolate(o => 1-o) }}
         >
-          <button className = "addButton" onClick = {() => onSubmit(books[i])}>ADD</button>
+          <button className = "addButton" onClick = {() => onSubmit(books[i])}>ADD BOOK</button>
         </a.div>
       </a.div>
     )}

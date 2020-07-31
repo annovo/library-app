@@ -1,13 +1,14 @@
 import React, {useState, useRef, useEffect } from 'react'
 import { useSprings, animated as a } from 'react-spring'
 import { hashCode } from '../utils/hashFunction'
+import bookCover from '../bookCover.png'
 import _ from 'lodash'
 
 const colorPallette = [
-  "rgba(252, 130, 16, 0.5)", 
-  "rgba(116, 212, 192, 0.5)", 
-  "rgba(217, 69, 95, 0.5)", 
-  "rgba(222, 244, 240, 0.5)"
+  "rgba(131, 131, 131, 0.5)", 
+  "rgba(75, 93, 103, 0.5)", 
+  "rgba(240, 236, 227, 0.5)", 
+  "rgba(24, 77, 71, 0.5)"
 ]
 
 const BooksGrid = ({ books, style }) => {
@@ -52,11 +53,9 @@ const BooksGrid = ({ books, style }) => {
     <div className = "books-grid-container" style = {style}>
     {springs.map(({ opacity, transform }, i) => 
       <a.div onClick = {() => handleItemClick(i)} key = {i} className = 'books-grid-item'>
-        <a.div className = "books-grid-cover" style ={{ opacity, transform, backgroundColor: backgroundStyle[books[i].id] }}>
-          <div className = "books-grid-img">
-            <img src = "https://upload.wikimedia.org/wikipedia/commons/f/fc/No_picture_available.png" alt = "nothing"/>
-          </div>
-          <div className = "books-grid-title">{books[i].title} - {books[i].author.name}</div>
+        <a.div className = "books-grid-cover" style ={{ opacity, transform, backgroundImage: `url(${bookCover})`, backgroundSize: "320px 450px" }}>
+          <div className = "books-grid-title">{books[i].title}</div>
+          <div className = "books-grid-author">{books[i].author.name}</div>
           <div className = "books-grid-footer">{books[i].published}</div>
         </a.div>
         <a.div 

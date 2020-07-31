@@ -48,6 +48,7 @@ const NewBook = (props) => {
               rating: book.volumeInfo.averageRating,
               genres: book.volumeInfo.categories,
               published: book.volumeInfo.publishedDate,
+              img: book.volumeInfo.imageLinks?.thumbnail
             }
             res = res.concat(newBook)
           }

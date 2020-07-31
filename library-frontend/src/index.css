@@ -2,6 +2,8 @@ body {
   font-family: Arial, sans-serif;
 }
 
+/* MAIN STYLE */
+
 button {
   border: 0;
   background: transparent;
@@ -23,11 +25,14 @@ button:focus{
   right: 0;
   width: 100%;
   background-color: rgba(168, 50, 50, 0.2);
+  z-index:10;
 }
+
 .nav button {
   text-transform: uppercase;
   padding: 15px;
 }
+
 .content {
   width: 1000px;
   margin: 65px auto;
@@ -60,6 +65,8 @@ select {
   border: 1px solid #e6e6e6;
 }
 
+/* GRID STYLE */
+
 .books-grid-container{
   --row-count: 10;
   display: grid;
@@ -87,9 +94,19 @@ select {
 
 .books-grid-title{
   text-transform: uppercase;
-  text-align: justify;
-  font-size: 0.78em;
-  margin: 4% 7%;
+  font-size: 1.5em;
+  font-family: Georgia;
+  font-weight: bold;
+  margin: 20%;
+  padding: 5%;
+  text-align: center;
+}
+
+.books-grid-author{
+  text-transform: uppercase;
+  font-size: 1em;
+  font-family: Georgia;
+  text-align: center;
 }
 
 .books-grid-footer{
@@ -100,27 +117,76 @@ select {
 }
 
 .books-grid-cover button {
-	box-shadow: 0px 10px 14px -7px #ffffff;
-	background:linear-gradient(to bottom, #ededed 5%, #dfdfdf 100%);
-	background-color:#ededed;
-	border-radius:8px;
-	position: absolute;
+	box-shadow:inset 0px 1px 3px 0px #91b8b3;
+	background:linear-gradient(to bottom, #768d87 5%, #6c7c7c 100%);
+	background-color:#768d87;
+	border-radius:5px;
+	border:1px solid #566963;
+  display:inline-block;
+  position: absolute;
   right: 35%;
   top: 35%;
 	cursor:pointer;
-	color:#777777;
+	color:#ffffff;
 	font-family:Arial;
-	font-size:23px;
+	font-size:15px;
 	font-weight:bold;
-	padding:17px 28px;
+	padding:13px 23px;
 	text-decoration:none;
-	text-shadow:0px 1px 0px #ffffff;
+  text-shadow:0px -1px 0px #2b665e;
 }
+
 .books-grid-cover button:hover {
-	background:linear-gradient(to bottom, #dfdfdf 5%, #ededed 100%);
-	background-color:#dfdfdf;
+	background:linear-gradient(to bottom, #6c7c7c 5%, #768d87 100%);
+	background-color:#6c7c7c;
 }
-.books-grid-cover button:active {
-	position:relative;
-	top:1px;
+
+/* MODAL STYLE */
+
+.books-modal-img img {
+  width: 100px;
+  float: right;
+  margin: 0px 10px;
+}
+
+.books-modal-title {
+  text-transform: uppercase;
+  text-align: justify;
+  font-size: 0.9em;
+  margin: 4% 4% 1%;
+}
+
+.books-modal-author {
+  opacity: 0.5;
+  margin: 1% 4%;
+  font-size: 0.8em;
+}
+
+.books-modal-rating{
+  margin: 1% 4%;
+}
+
+.books-modal-rating i {
+  font-sizE: 1.1em;
+  color: #c70039;
+}
+
+.books-modal-description{
+  font-size: 1em;
+  text-align: justify;
+  margin: 4%;
+}
+
+.books-modal-genres p{
+  margin: 3px 6px;
+  text-transform: lowercase;
+}
+
+.books-modal-genres{
+  right: 5%;
+  bottom: 15px;
+  left: auto;
+  background-color: rgba(81,75,84,0.33);
+  border: 2px solid rgba(81,75,84,0.52);
+  border-radius: 2px;
 }
